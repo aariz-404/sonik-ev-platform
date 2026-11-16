@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: sonik-ev-backend
+    runtime: python
+    rootDir: sonik-ev-platform
+    buildCommand: pip install -r requirements.txt && python database/seed_demo_data.py
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: DATABASE_URL
+        value: sqlite:///sonik_ev.db
