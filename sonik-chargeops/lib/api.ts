@@ -13,7 +13,18 @@ import {
   AnalyticsSummary,
 } from '@/types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+function getApiBase(): string {
+  let url = process.env.NEXT_PUBLIC_API_URL;
+  if (!url || url.includes('localhost')) {
+    if (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')) {
+      return 'https://sonik-ev-platform.vercel.app/api/v1';
+    }
+  }
+  if (url && url.includes('sonik-ev-backend.vercel.app')) {
+    return url.replace('sonik-ev-backend.vercel.app', 'sonik-ev-platform.vercel.app');
+  }
+  return url || 'http://localhost:5000/api/v1';
+}
 
 export class ApiError extends Error {
   code: number;
@@ -31,7 +42,8 @@ async function request<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  const url = `${API_BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const apiBase = getApiBase();
+  const url = `${apiBase}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   const headers = new Headers(options.headers || {});
 
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -51,7 +63,7 @@ async function request<T>(
     });
   } catch (err) {
     throw new ApiError(
-      'Unable to connect to Sonik backend. Ensure Flask server is running at ' + API_BASE,
+      'Unable to connect to Sonik backend. Ensure Flask server is running at ' + apiBase,
       0
     );
   }
