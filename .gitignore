@@ -23,8 +23,7 @@ __pycache__/
 *$py.class
 *.sqlite3
 *.db
-sonik-ev-platform/instance/
-sonik-ev-platform/*.db
+!sonik-ev-platform/instance/sonik_ev.db
 
 # Logs & Diagnostics
 *.log
