@@ -14,17 +14,43 @@ load_dotenv()
 
 def _build_db_uri() -> str:
     """Construct the database connection URI from environment variables."""
-    # If a full DATABASE_URL is provided, use it directly (standard 12-factor pattern)
     database_url = os.getenv("DATABASE_URL")
     if database_url:
         return database_url
 
-    user = os.getenv("DB_USER", "sonik_user")
-    password = os.getenv("DB_PASSWORD", "sonik_password")
-    host = os.getenv("DB_HOST", "localhost")
-    port = os.getenv("DB_PORT", "3306")
-    name = os.getenv("DB_NAME", "sonik_ev_db")
-    return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}"
+    # Check for Vercel serverless environment
+    if os.getenv("VERCEL"):
+        import tempfile
+        import shutil
+        tmp_dir = tempfile.gettempdir()
+        tmp_db = os.path.join(tmp_dir, "sonik_ev.db")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        src_db = os.path.join(base_dir, "instance", "sonik_ev.db")
+        if not os.path.exists(tmp_db) and os.path.exists(src_db):
+            try:
+                shutil.copyfile(src_db, tmp_db)
+            except Exception:
+                pass
+        if os.path.exists(tmp_db):
+            return f"sqlite:///{tmp_db}"
+        return "sqlite:///:memory:"
+
+    # If local instance sqlite database exists
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    inst_db = os.path.join(base_dir, "instance", "sonik_ev.db")
+    if os.path.exists(inst_db):
+        return f"sqlite:///{inst_db}"
+
+    # If explicit MySQL host is configured
+    if os.getenv("DB_HOST"):
+        user = os.getenv("DB_USER", "sonik_user")
+        password = os.getenv("DB_PASSWORD", "sonik_password")
+        host = os.getenv("DB_HOST", "localhost")
+        port = os.getenv("DB_PORT", "3306")
+        name = os.getenv("DB_NAME", "sonik_ev_db")
+        return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}"
+
+    return "sqlite:///sonik_ev.db"
 
 
 class Config:
