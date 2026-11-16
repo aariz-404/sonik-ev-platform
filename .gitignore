@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+*/node_modules/
+venv/
+*/venv/
+env/
+*/env/
+
+# Next.js Build Outputs & Caches
+.next/
+*/.next/
+out/
+*/out/
+build/
+dist/
+.turbo
+
+# Python Caches & Database
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+*.db
+sonik-ev-platform/instance/
+sonik-ev-platform/*.db
+
+# Logs & Diagnostics
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+out.log
+err.log
+
+# Environment files
+.env.local
+.env.*.local
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

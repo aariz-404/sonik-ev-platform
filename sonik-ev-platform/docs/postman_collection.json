@@ -1,0 +1,265 @@
+{
+  "info": {
+    "_postman_id": "sonik-ev-platform-v1",
+    "name": "Sonik EV Platform API Collection",
+    "description": "Complete Postman v2.1 API Collection for the Sonik EV Platform backend serving ChargeOps and ChargeConnect.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "operatorToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "driverToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login (Operator)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"operator@sonik.ev\",\n  \"password\": \"operator123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Driver)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"driver@sonik.ev\",\n  \"password\": \"driver123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Register Driver",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rajesh Pilot\",\n  \"email\": \"rajesh@example.com\",\n  \"password\": \"pilot123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{operatorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{operatorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stations",
+      "item": [
+        {
+          "name": "List All Stations",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/stations", "host": ["{{baseUrl}}"], "path": ["stations"] }
+          }
+        },
+        {
+          "name": "Filter Stations by City",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/stations?city=Noida", "host": ["{{baseUrl}}"], "path": ["stations"], "query": [{ "key": "city", "value": "Noida" }] }
+          }
+        },
+        {
+          "name": "Get Station by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/stations/1", "host": ["{{baseUrl}}"], "path": ["stations", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chargers",
+      "item": [
+        {
+          "name": "List All Chargers",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/chargers", "host": ["{{baseUrl}}"], "path": ["chargers"] }
+          }
+        },
+        {
+          "name": "Filter Available Chargers",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/chargers?status=Available&connector_type=CCS2&min_power=50", "host": ["{{baseUrl}}"], "path": ["chargers"], "query": [{ "key": "status", "value": "Available" }, { "key": "connector_type", "value": "CCS2" }, { "key": "min_power", "value": "50" }] }
+          }
+        },
+        {
+          "name": "Get Charger by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/chargers/1", "host": ["{{baseUrl}}"], "path": ["chargers", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Charging Sessions",
+      "item": [
+        {
+          "name": "Create Session (POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{driverToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"charger_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/sessions", "host": ["{{baseUrl}}"], "path": ["sessions"] }
+          }
+        },
+        {
+          "name": "List Sessions (Role Scoped)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{operatorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/sessions?limit=20", "host": ["{{baseUrl}}"], "path": ["sessions"], "query": [{ "key": "limit", "value": "20" }] }
+          }
+        },
+        {
+          "name": "Activate Session (PATCH -> Active)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{driverToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Active\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/sessions/1", "host": ["{{baseUrl}}"], "path": ["sessions", "1"] }
+          }
+        },
+        {
+          "name": "Complete Session (PATCH -> Completed)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{driverToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Completed\",\n  \"energy_kwh\": 24.5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/sessions/1", "host": ["{{baseUrl}}"], "path": ["sessions", "1"] }
+          }
+        },
+        {
+          "name": "Cancel Session (PATCH -> Cancelled)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{driverToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Cancelled\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/sessions/1", "host": ["{{baseUrl}}"], "path": ["sessions", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Tickets",
+      "item": [
+        {
+          "name": "Create Service Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{driverToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"Hardware\",\n  \"priority\": \"High\",\n  \"description\": \"Connector gun latch release mechanism stuck.\",\n  \"charger_id\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tickets", "host": ["{{baseUrl}}"], "path": ["tickets"] }
+          }
+        },
+        {
+          "name": "List Service Tickets",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{operatorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tickets?status=Open", "host": ["{{baseUrl}}"], "path": ["tickets"], "query": [{ "key": "status", "value": "Open" }] }
+          }
+        },
+        {
+          "name": "Update Ticket Status (Operator)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{operatorToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"InProgress\",\n  \"priority\": \"High\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/tickets/1", "host": ["{{baseUrl}}"], "path": ["tickets", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard Analytics",
+      "item": [
+        {
+          "name": "Get Summary Analytics (Operator/Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{operatorToken}}" }],
+            "url": { "raw": "{{baseUrl}}/analytics/summary", "host": ["{{baseUrl}}"], "path": ["analytics", "summary"] }
+          }
+        }
+      ]
+    }
+  ]
+}
